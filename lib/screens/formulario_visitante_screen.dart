@@ -465,8 +465,14 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
 
 
             //17. Você pretende retornar ao Festival Gastronômico e Cultural de Aracati em edições futuras?
+
+            const Text(
+              '17. Você pretende retornar ao Festival Gastronômico e Cultural de Aracati em edições futuras?', 
+              style: TextStyle(fontWeight: FontWeight.bold)
+            ),
+            const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              decoration: const InputDecoration(labelText: '17. Você pretende retornar ao Festival Gastronômico e Cultural de Aracati em edições futuras?', border: OutlineInputBorder()),
+              decoration: const InputDecoration(border: OutlineInputBorder()), // Tirei o labelText daqui!
               initialValue: _pretendeRetornarSelecionado,
               items: ['Sim, com certeza', 'Talvez, dependendo da programação', 'Não tenho certeza', 'Não, não pretendo']
                   .map((label) => DropdownMenuItem(value: label, child: Text(label)))
@@ -477,32 +483,47 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
 
 
             //18. Você recomendaria o Festival Gastronômico e Cultural de Aracati para outras pessoas?
+            const Text(
+              '18. Você recomendaria o Festival Gastronômico e Cultural de Aracati para outras pessoas?', 
+              style: TextStyle(fontWeight: FontWeight.bold)
+            ),
+            const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              decoration: const InputDecoration(labelText: '18. Você recomendaria o Festival Gastronômico e Cultural de Aracati para outras pessoas?', border: OutlineInputBorder()),
-              initialValue: _pretendeRetornarSelecionado,
+              decoration: const InputDecoration(border: OutlineInputBorder()),
+              initialValue: _recomendariaSelecionado,
               items: ['Sim, com certeza', 'Talvez, dependendo da pessoa', 'Não, não recomendaria']
                   .map((label) => DropdownMenuItem(value: label, child: Text(label)))
                   .toList(),
-              onChanged: (val) => setState(() => _pretendeRetornarSelecionado = val),
+              onChanged: (val) => setState(() => _recomendariaSelecionado = val),
             ),
             const SizedBox(height: 16),
 
 
             //19. Como você considera a iniciativa da organização em evitar a comercialização de garrafas de vidro no evento pensando na segurança e no meio ambiente?
+            const Text(
+              '19. Como você considera a iniciativa da organização em evitar a comercialização de garrafas de vidro no evento pensando na segurança e no meio ambiente?', 
+              style: TextStyle(fontWeight: FontWeight.bold)
+            ),
+            const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              decoration: const InputDecoration(labelText: '19. Como você considera a iniciativa da organização em evitar a comercialização de garrafas de vidro no evento pensando na segurança e no meio ambiente?', border: OutlineInputBorder()),
-              initialValue: _pretendeRetornarSelecionado,
-              items: ['Sim, com certeza', 'Talvez, dependendo da pessoa', 'Não, não recomendaria']
+              decoration: const InputDecoration(border: OutlineInputBorder()),
+              initialValue: _iniciativaGarrafasSelecionada,
+              items: ['Concordo totalmente', 'Concordo parcialmente', 'Não concordo, mas entendo o motivo', 'Não concordo', 'Não tenho opinião formada']
                   .map((label) => DropdownMenuItem(value: label, child: Text(label)))
                   .toList(),
-              onChanged: (val) => setState(() => _pretendeRetornarSelecionado = val),
+              onChanged: (val) => setState(() => _iniciativaGarrafasSelecionada = val),
             ),
             const SizedBox(height: 16),
 
             //20. Que sugestões você gostaria de deixar para melhorar o Festival Gastronômico e Cultural de Aracati nas próximas edições?
+            const Text(
+              '20. Que sugestões você gostaria de deixar para melhorar o Festival Gastronômico e Cultural de Aracati nas próximas edições?', 
+              style: TextStyle(fontWeight: FontWeight.bold)
+            ),
+            const SizedBox(height: 8),
             TextFormField(
               controller: _sugestoesController,
-              decoration: const InputDecoration(labelText: '20. Que sugestões você gostaria de deixar para melhorar o Festival Gastronômico e Cultural de Aracati nas próximas edições?', border: OutlineInputBorder()),
+              decoration: const InputDecoration(border: OutlineInputBorder()), // Sem labelText aqui também
               maxLines: 3,
             ),
             const SizedBox(height: 30),
