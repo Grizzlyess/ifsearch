@@ -54,86 +54,143 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
 
   // Função para guardar na base de dados
   Future<void> _salvarFormulario() async {
+    // 1. Fecha o teclado
+    FocusScope.of(context).unfocus();
+
+    // 2. TRAVA DE FERRO: Perguntas 1 a 8
+    if (_emailController.text.trim().isEmpty ||
+        _generoSelecionado == null ||
+        (_generoSelecionado == 'Outro' && _outroGeneroController.text.trim().isEmpty) ||
+        _estadoCivilSelecionado == null ||
+        _faixaEtariaSelecionada == null ||
+        _escolaridadeSelecionada == null ||
+        _rendaSelecionada == null ||
+        _cidadeSelecionada == null ||
+        (_cidadeSelecionada == 'Outro' && _cidadeController.text.trim().isEmpty) ||
+        _hospedadoSelecionado == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('ERRO: Preencha todas as perguntas de 1 a 8.'), backgroundColor: Colors.red));
+      return; 
+    }
+
+    // 3. TRAVA DE FERRO: Hospedagem
+    if (_hospedadoSelecionado == 'Sim') {
+      if (_tipoHospedagemSelecionado == null || _localHospedagemSelecionado == null || _qtdPessoasHospedadas == null) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('ERRO: Preencha os dados da hospedagem.'), backgroundColor: Colors.red));
+        return;
+      }
+    }
+
+    // 4. TRAVA DE FERRO: Perguntas 13 e 14
+    if (_diasVisitaSelecionado == null || _gastoPorDiaSelecionado == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('ERRO: Responda às perguntas 13 e 14.'), backgroundColor: Colors.red));
+      return;
+    }
+
+    // 5. TRAVA DE FERRO: Perguntas 15 e 16
     bool p15Respondida = _comoConheceu.isNotEmpty || (_isOutroComoConheceuSelected && _outroComoConheceuController.text.trim().isNotEmpty);
     bool p16Respondida = _aspectosGostou.isNotEmpty || (_isOutroAspectoSelected && _outroAspectoController.text.trim().isNotEmpty);
 
     if (!p15Respondida) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Por favor, responda à pergunta 15.')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('ERRO: Responda à pergunta 15.'), backgroundColor: Colors.red));
       return; 
     }
-    
     if (!p16Respondida) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Por favor, responda à pergunta 16.')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('ERRO: Responda à pergunta 16.'), backgroundColor: Colors.red));
       return; 
     }
-    if (_formKey.currentState!.validate()) {
-      final visitante = VisitanteModel(
-        email: _emailController.text,
-        genero: _generoSelecionado ?? 'Não informado',
-        estadoCivil: _estadoCivilSelecionado ?? 'Não informado',
-        faixaEtaria: _faixaEtariaSelecionada ?? 'Não informado',
-        escolaridade: _escolaridadeSelecionada ?? 'Não informado',
-        renda: _rendaSelecionada ?? 'Não informado',
-        cidade: _cidadeController.text,
-        hospedado: _hospedadoSelecionado ?? 'Não informado',
-        diasVisita: _diasVisitaSelecionado ?? 'Não informado',
-        gastoPorDia: _gastoPorDiaSelecionado ?? 'Não informado',
-        //comoConheceu: _comoConheceu.join(', '),
-        comoConheceu: [..._comoConheceu, if (_isOutroComoConheceuSelected && _outroComoConheceuController.text.isNotEmpty) _outroComoConheceuController.text].join(', '), 
-        //aspectosGostou: _aspectosGostouController.text,
-        aspectosGostou: [..._aspectosGostou, if (_isOutroAspectoSelected && _outroAspectoController.text.isNotEmpty) _outroAspectoController.text].join(', '),
-        pretendeRetornar: _pretendeRetornarSelecionado ?? 'Não informado',
-        recomendaria: _recomendariaSelecionado ?? 'Não informado',
-        iniciativaGarrafas: _iniciativaGarrafasSelecionada ?? 'Não informado',
-        sugestoes: _sugestoesController.text,
+
+    // 6. TRAVA DE FERRO: Perguntas 17 a 19
+    if (_pretendeRetornarSelecionado == null || _recomendariaSelecionado == null || _iniciativaGarrafasSelecionada == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('ERRO: Responda às perguntas 17 a 19.'), backgroundColor: Colors.red));
+      return;
+    }
+
+    // 7. Validação visual final (Textos curtos, e-mails inválidos, etc.)
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    // ==========================================
+    // SE CHEGOU AQUI, O FORMULÁRIO ESTÁ 100% PREENCHIDO
+    // ==========================================
+
+    String cidadeFinal = _cidadeSelecionada == 'Outro' ? _cidadeController.text.trim() : (_cidadeSelecionada ?? '');
+    String generoFinal = _generoSelecionado == 'Outro' ? _outroGeneroController.text.trim() : (_generoSelecionado ?? '');
+    String momentoDaColeta = DateTime.now().toString().split('.')[0];
+
+    final visitante = VisitanteModel(
+      email: _emailController.text.trim(),
+      genero: generoFinal,
+      estadoCivil: _estadoCivilSelecionado!,
+      faixaEtaria: _faixaEtariaSelecionada!,
+      escolaridade: _escolaridadeSelecionada!,
+      renda: _rendaSelecionada!,
+      cidade: cidadeFinal,
+      hospedado: _hospedadoSelecionado!,
+      tipoHospedagem: _tipoHospedagemSelecionado,
+      localHospedagem: _localHospedagemSelecionado,
+      qtdPessoasHospedadas: _qtdPessoasHospedadas,
+      nomeHotel: _nomeHotelController.text.trim(),
+      diasVisita: _diasVisitaSelecionado!,
+      gastoPorDia: _gastoPorDiaSelecionado!,
+      comoConheceu: [..._comoConheceu, if (_isOutroComoConheceuSelected && _outroComoConheceuController.text.isNotEmpty) _outroComoConheceuController.text.trim()].join(', '), 
+      aspectosGostou: [..._aspectosGostou, if (_isOutroAspectoSelected && _outroAspectoController.text.isNotEmpty) _outroAspectoController.text.trim()].join(', '),
+      pretendeRetornar: _pretendeRetornarSelecionado!,
+      recomendaria: _recomendariaSelecionado!,
+      iniciativaGarrafas: _iniciativaGarrafasSelecionada!,
+      sugestoes: _sugestoesController.text.trim(),
+      dataHora: momentoDaColeta,
+    );
+
+    final db = DatabaseHelper();
+    await db.inserirVisitante(visitante);
+    SyncService().sincronizarDados();
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Resposta salva offline com sucesso!'), backgroundColor: Colors.green),
       );
-
-      final db = DatabaseHelper();
-      await db.inserirVisitante(visitante);
-      SyncService().sincronizarDados();
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Resposta salva offline com sucesso!')),
-        );
-        
-        // Limpar o formulário após guardar
-        _formKey.currentState!.reset();
-        _emailController.clear();
-        _cidadeController.clear();
-        _aspectosGostouController.clear();
-        _sugestoesController.clear();
-        setState(() {
-          _generoSelecionado = null;
-          _estadoCivilSelecionado = null;
-          _faixaEtariaSelecionada = null;
-          _escolaridadeSelecionada = null;
-          _rendaSelecionada = null;
-          _hospedadoSelecionado = null;
-          _diasVisitaSelecionado = null;
-          _gastoPorDiaSelecionado = null;
-          _pretendeRetornarSelecionado = null;
-          _recomendariaSelecionado = null;
-          _iniciativaGarrafasSelecionada = null;
-          _comoConheceu.clear();
-          _aspectosGostou.clear();
-          _isOutroAspectoSelected = false;
-          _cidadeSelecionada = null;     
+      
+      // Limpeza das variáveis de forma segura
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _formKey.currentState!.reset();
+          _emailController.clear();
           _cidadeController.clear();
-        });
-      }
+          _aspectosGostouController.clear();
+          _sugestoesController.clear();
+          _outroGeneroController.clear();
+          _nomeHotelController.clear();
+          _outroTipoHospedagemController.clear();
+          _outroLocalHospedagemController.clear();
+          _outroComoConheceuController.clear();
+          _outroAspectoController.clear();
+
+          setState(() {
+            _generoSelecionado = null; _estadoCivilSelecionado = null; _faixaEtariaSelecionada = null;
+            _escolaridadeSelecionada = null; _rendaSelecionada = null; _hospedadoSelecionado = null;
+            _tipoHospedagemSelecionado = null; _localHospedagemSelecionado = null; _qtdPessoasHospedadas = null;
+            _diasVisitaSelecionado = null; _gastoPorDiaSelecionado = null; _pretendeRetornarSelecionado = null;
+            _recomendariaSelecionado = null; _iniciativaGarrafasSelecionada = null;
+            _comoConheceu.clear(); _aspectosGostou.clear(); _isOutroComoConheceuSelected = false;
+            _isOutroAspectoSelected = false; _cidadeSelecionada = null;     
+          });
+        }
+      });
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Pesquisa de Visitantes')),
       body: Form(
         key: _formKey,
-        child: ListView(
+        child: SingleChildScrollView( // <-- MUDANÇA AQUI
           padding: const EdgeInsets.all(16.0),
-          children: [
+          child: Column( // <-- MUDANÇA AQUI
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // ... Mantenha todas as suas perguntas exatamente como estão ...
 
             // 1. EMAIL:
             TextFormField(
@@ -153,10 +210,11 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             const Text('2. Com qual gênero você se identifica?', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
+               // Garante a sincronização do estado interno
               isExpanded: true,
-              decoration: const InputDecoration(border: OutlineInputBorder()), // Padronizado sem labelText
+              decoration: const InputDecoration(border: OutlineInputBorder()),
               initialValue: _generoSelecionado,
-              validator: (value) => value == null ? 'Campo obrigatório' : null,
+              validator: (value) => (value == null || value.isEmpty) ? 'Campo obrigatório' : null,
               items: ['Feminino', 'Masculino', 'Prefiro não responder', 'Outro']
                   .map((label) => DropdownMenuItem(value: label, child: Text(label)))
                   .toList(),
@@ -165,8 +223,14 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             if (_generoSelecionado == 'Outro') ...[
               const SizedBox(height: 8),
               TextFormField(
-                controller: _outroGeneroController, // Corrigido aqui!
+                controller: _outroGeneroController,
                 decoration: const InputDecoration(labelText: 'Por favor, especifique', border: OutlineInputBorder()),
+                validator: (value) {
+                  if (_generoSelecionado == 'Outro' && (value == null || value.trim().isEmpty)) {
+                    return 'Por favor, especifique o gênero';
+                  }
+                  return null;
+                },
               ),
             ],
             const SizedBox(height: 16),
@@ -176,6 +240,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             const Text('3. Estado Civil:', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
+              
               isExpanded: true,
               decoration: const InputDecoration(border: OutlineInputBorder()),
               initialValue: _estadoCivilSelecionado,
@@ -192,6 +257,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             const Text('4. Faixa Etária:', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
+              
               isExpanded: true,
               decoration: const InputDecoration(border: OutlineInputBorder()),
               initialValue: _faixaEtariaSelecionada,
@@ -216,6 +282,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             const Text('5. Escolaridade:', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
+              
               isExpanded: true,
               decoration: const InputDecoration(border: OutlineInputBorder()),
               initialValue: _escolaridadeSelecionada,
@@ -241,6 +308,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             const Text('6. Renda:', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
+              
               isExpanded: true,
               decoration: const InputDecoration(border: OutlineInputBorder()), 
               initialValue: _rendaSelecionada,
@@ -265,20 +333,34 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             const Text('7. Você é de qual cidade?', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
+              
               isExpanded: true,
-              decoration: const InputDecoration(border: OutlineInputBorder()), // Título removido daqui
+              decoration: const InputDecoration(border: OutlineInputBorder()),
               initialValue: _cidadeSelecionada,
-              validator: (value) => value == null ? 'Campo obrigatório' : null,
+              validator: (value) => (value == null || value.isEmpty) ? 'Campo obrigatório' : null,
               items: ['Aracati', 'Fortim', 'Icapuí', 'Fortaleza', 'Itaiçaba', 'Outro']
                   .map((label) => DropdownMenuItem(value: label, child: Text(label)))
                   .toList(),
-              onChanged: (val) => setState(() => _cidadeSelecionada = val),
+              onChanged: (val) {
+                setState(() {
+                  _cidadeSelecionada = val;
+                  if (val != 'Outro') {
+                    _cidadeController.clear();
+                  }
+                });
+              },
             ),
             if (_cidadeSelecionada == 'Outro') ...[
               const SizedBox(height: 8),
               TextFormField(
                 controller: _cidadeController,
                 decoration: const InputDecoration(labelText: 'Qual? (Escreva a cidade)', border: OutlineInputBorder()),
+                validator: (value) {
+                  if (_cidadeSelecionada == 'Outro' && (value == null || value.trim().isEmpty)) {
+                    return 'Por favor, digite o nome da sua cidade';
+                  }
+                  return null;
+                },
               ),
             ],
             const SizedBox(height: 16),
@@ -658,6 +740,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
           ],
         ),
       ),
+      )
     );
   }
 }

@@ -1,4 +1,5 @@
 class VisitanteModel {
+  final String? dataHora;
   final int? id;
   final String email;
   final String genero;
@@ -29,6 +30,7 @@ class VisitanteModel {
     required this.diasVisita, required this.gastoPorDia, required this.comoConheceu,
     required this.aspectosGostou, required this.pretendeRetornar, 
     required this.recomendaria, required this.iniciativaGarrafas, required this.sugestoes,
+    this.dataHora,
   });
 
   Map<String, dynamic> toMap() {
@@ -41,6 +43,7 @@ class VisitanteModel {
       'comoConheceu': comoConheceu, 'aspectosGostou': aspectosGostou,
       'pretendeRetornar': pretendeRetornar, 'recomendaria': recomendaria,
       'iniciativaGarrafas': iniciativaGarrafas, 'sugestoes': sugestoes,
+      'dataHora': dataHora,
     };
   }
 
@@ -67,6 +70,7 @@ class VisitanteModel {
       recomendaria: map['recomendaria'] ?? '',
       iniciativaGarrafas: map['iniciativaGarrafas'] ?? '',
       sugestoes: map['sugestoes'] ?? '',
+      dataHora: map['dataHora'],
     );
   }
 }

@@ -51,6 +51,7 @@ class DatabaseHelper {
         recomendaria TEXT,
         iniciativaGarrafas TEXT,
         sugestoes TEXT,
+        dataHora TEXT,
         sincronizado INTEGER DEFAULT 0
       )
     ''');
