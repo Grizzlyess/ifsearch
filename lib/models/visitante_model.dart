@@ -43,4 +43,30 @@ class VisitanteModel {
       'iniciativaGarrafas': iniciativaGarrafas, 'sugestoes': sugestoes,
     };
   }
+
+  factory VisitanteModel.fromMap(Map<String, dynamic> map) {
+    return VisitanteModel(
+      id: map['id'],
+      email: map['email'] ?? '',
+      genero: map['genero'] ?? '',
+      estadoCivil: map['estadoCivil'] ?? '',
+      faixaEtaria: map['faixaEtaria'] ?? '',
+      escolaridade: map['escolaridade'] ?? '',
+      renda: map['renda'] ?? '',
+      cidade: map['cidade'] ?? '',
+      hospedado: map['hospedado'] ?? '',
+      tipoHospedagem: map['tipoHospedagem'],
+      localHospedagem: map['localHospedagem'],
+      qtdPessoasHospedadas: map['qtdPessoasHospedadas'],
+      nomeHotel: map['nomeHotel'],
+      diasVisita: map['diasVisita'] ?? '',
+      gastoPorDia: map['gastoPorDia'] ?? '',
+      comoConheceu: map['comoConheceu'] ?? '',
+      aspectosGostou: map['aspectosGostou'] ?? '',
+      pretendeRetornar: map['pretendeRetornar'] ?? '',
+      recomendaria: map['recomendaria'] ?? '',
+      iniciativaGarrafas: map['iniciativaGarrafas'] ?? '',
+      sugestoes: map['sugestoes'] ?? '',
+    );
+  }
 }

@@ -5,7 +5,6 @@ import '../models/empreendedor_model.dart';
 
 class DatabaseHelper {
   DatabaseHelper._privateConstructor();
-  //static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   factory DatabaseHelper() => _instance;
   DatabaseHelper._internal();
@@ -51,7 +50,8 @@ class DatabaseHelper {
         pretendeRetornar TEXT,
         recomendaria TEXT,
         iniciativaGarrafas TEXT,
-        sugestoes TEXT
+        sugestoes TEXT,
+        sincronizado INTEGER DEFAULT 0
       )
     ''');
 
@@ -108,6 +108,26 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> obterEmpreendedores() async {
   Database db = await database;
   return await db.query('empreendedores');
+  }
+
+  Future<List<VisitanteModel>> buscarPendentesSincronizacao() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'visitantes',
+      where: 'sincronizado = ?',
+      whereArgs: [0],
+    );
+    return List.generate(maps.length, (i) => VisitanteModel.fromMap(maps[i]));
+  }
+
+  Future<void> marcarComoSincronizado(int id) async {
+    final db = await database;
+    await db.update(
+      'visitantes',
+      {'sincronizado': 1},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
  
 }

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'screens/formulario_visitante_screen.dart'; 
+import 'services/sync_service.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SyncService().iniciarMonitoramento();
   runApp(const MyApp());
 }
 

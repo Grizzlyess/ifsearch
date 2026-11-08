@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../database/db_helper.dart';
 import '../models/visitante_model.dart';
+import '../services/sync_service.dart';
 
 class FormularioVisitanteScreen extends StatefulWidget {
   const FormularioVisitanteScreen({Key? key}) : super(key: key);
@@ -77,6 +78,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
 
       final db = DatabaseHelper();
       await db.inserirVisitante(visitante);
+      SyncService().sincronizarDados();
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
