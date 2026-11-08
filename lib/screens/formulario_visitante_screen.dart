@@ -54,6 +54,18 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
 
   // Função para guardar na base de dados
   Future<void> _salvarFormulario() async {
+    bool p15Respondida = _comoConheceu.isNotEmpty || (_isOutroComoConheceuSelected && _outroComoConheceuController.text.trim().isNotEmpty);
+    bool p16Respondida = _aspectosGostou.isNotEmpty || (_isOutroAspectoSelected && _outroAspectoController.text.trim().isNotEmpty);
+
+    if (!p15Respondida) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Por favor, responda à pergunta 15.')));
+      return; 
+    }
+    
+    if (!p16Respondida) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Por favor, responda à pergunta 16.')));
+      return; 
+    }
     if (_formKey.currentState!.validate()) {
       final visitante = VisitanteModel(
         email: _emailController.text,
@@ -127,6 +139,12 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             TextFormField(
               controller: _emailController,
               decoration: const InputDecoration(labelText: '1. E-mail do Pesquisador', border: OutlineInputBorder()),
+              validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Por favor, especifique';
+                  }
+                  return null;
+                },
             ),
             const SizedBox(height: 16),
 
@@ -137,6 +155,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             DropdownButtonFormField<String>(
               decoration: const InputDecoration(border: OutlineInputBorder()), // Padronizado sem labelText
               initialValue: _generoSelecionado,
+              validator: (value) => value == null ? 'Campo obrigatório' : null,
               items: ['Feminino', 'Masculino', 'Prefiro não responder', 'Outro']
                   .map((label) => DropdownMenuItem(value: label, child: Text(label)))
                   .toList(),
@@ -158,6 +177,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             DropdownButtonFormField<String>(
               decoration: const InputDecoration(border: OutlineInputBorder()),
               initialValue: _estadoCivilSelecionado,
+              validator: (value) => value == null ? 'Campo obrigatório' : null,
               items: ['Solteiro(a)', 'Casado(a)', 'Divorciado(a)', 'Viúvo(a)', 'União estável']
                   .map((label) => DropdownMenuItem(value: label, child: Text(label)))
                   .toList(),
@@ -172,6 +192,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             DropdownButtonFormField<String>(
               decoration: const InputDecoration(border: OutlineInputBorder()),
               initialValue: _faixaEtariaSelecionada,
+              validator: (value) => value == null ? 'Campo obrigatório' : null,
               items: [
                 'Menos de 18 anos', 
                 '18 a 24 anos', 
@@ -194,10 +215,11 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             DropdownButtonFormField<String>(
               decoration: const InputDecoration(border: OutlineInputBorder()),
               initialValue: _escolaridadeSelecionada,
+              validator: (value) => value == null ? 'Campo obrigatório' : null,
               items: [
                 'Ensino Fundamental Incompleto', 
                 'Ensino Fundamental Completo', 
-                'Ensino Médio Incompleto', // Corrigida a duplicação aqui
+                'Ensino Médio Incompleto', 
                 'Ensino Médio Completo',
                 'Ensino Superior Incompleto', 
                 'Ensino Superior Completo', 
@@ -215,8 +237,9 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             const Text('6. Renda:', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              decoration: const InputDecoration(border: OutlineInputBorder()), // Título removido daqui
+              decoration: const InputDecoration(border: OutlineInputBorder()), 
               initialValue: _rendaSelecionada,
+              validator: (value) => value == null ? 'Campo obrigatório' : null,
               items: [
                 'Até 1 salário mínimo', 
                 'De 1 a 2 salários mínimos', 
@@ -239,6 +262,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             DropdownButtonFormField<String>(
               decoration: const InputDecoration(border: OutlineInputBorder()), // Título removido daqui
               initialValue: _cidadeSelecionada,
+              validator: (value) => value == null ? 'Campo obrigatório' : null,
               items: ['Aracati', 'Fortim', 'Icapuí', 'Fortaleza', 'Itaiçaba', 'Outro']
                   .map((label) => DropdownMenuItem(value: label, child: Text(label)))
                   .toList(),
@@ -263,6 +287,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             DropdownButtonFormField<String>(
               decoration: const InputDecoration(border: OutlineInputBorder()),
               initialValue: _hospedadoSelecionado,
+              validator: (value) => value == null ? 'Campo obrigatório' : null,
               items: ['Sim', 'Não']
                   .map((label) => DropdownMenuItem(value: label, child: Text(label)))
                   .toList(),
@@ -396,6 +421,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             DropdownButtonFormField<String>(
               decoration: const InputDecoration(border: OutlineInputBorder()),
               initialValue: _diasVisitaSelecionado,
+              validator: (value) => value == null ? 'Campo obrigatório' : null,
               items: ['1', '2', '3']
                   .map((label) => DropdownMenuItem(value: label, child: Text(label)))
                   .toList(),
@@ -412,6 +438,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             DropdownButtonFormField<String>(
               decoration: const InputDecoration(border: OutlineInputBorder()),
               initialValue: _gastoPorDiaSelecionado,
+              validator: (value) => value == null ? 'Campo obrigatório' : null,
               items: [
                 'Até R\$ 50,00',
                 'De R\$ 51,00 a R\$ 100,00',
@@ -550,8 +577,9 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
-              decoration: const InputDecoration(border: OutlineInputBorder()), // Tirei o labelText daqui!
+              decoration: const InputDecoration(border: OutlineInputBorder()), 
               initialValue: _pretendeRetornarSelecionado,
+              validator: (value) => value == null ? 'Campo obrigatório' : null,
               items: ['Sim, com certeza', 'Talvez, dependendo da programação', 'Não tenho certeza', 'Não, não pretendo']
                   .map((label) => DropdownMenuItem(value: label, child: Text(label)))
                   .toList(),
@@ -569,6 +597,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             DropdownButtonFormField<String>(
               decoration: const InputDecoration(border: OutlineInputBorder()),
               initialValue: _recomendariaSelecionado,
+              validator: (value) => value == null ? 'Campo obrigatório' : null,
               items: ['Sim, com certeza', 'Talvez, dependendo da pessoa', 'Não, não recomendaria']
                   .map((label) => DropdownMenuItem(value: label, child: Text(label)))
                   .toList(),
@@ -586,6 +615,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             DropdownButtonFormField<String>(
               decoration: const InputDecoration(border: OutlineInputBorder()),
               initialValue: _iniciativaGarrafasSelecionada,
+              validator: (value) => value == null ? 'Campo obrigatório' : null,
               items: ['Concordo totalmente', 'Concordo parcialmente', 'Não concordo, mas entendo o motivo', 'Não concordo', 'Não tenho opinião formada']
                   .map((label) => DropdownMenuItem(value: label, child: Text(label)))
                   .toList(),
