@@ -2,46 +2,72 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import '../database/db_helper.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class SyncService {
   final DatabaseHelper _dbHelper = DatabaseHelper();
+  final String apiUrl = dotenv.env['GOOGLE_SHEETS_API_URL'] ?? '';
 
-  // Substitua pela URL da sua API backend
-  final String apiUrl = 'https://script.google.com/macros/s/AKfycbxc6zCK0ZsCYFr479xzvodFaDzMYChqVI-0vKogVaPJlDZngzWFOnwoPqmLUe91PJ6l/exec';
+  // A NOSSA TRAVA DE SEGURANÇA
+  bool _isSyncing = false;
 
   Future<void> sincronizarDados() async {
-    // 1. Checa se o dispositivo possui conexão ativa
-    final List<ConnectivityResult> connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult.contains(ConnectivityResult.none)) {
-      return; // Offline: encerra sem tentar envio
+    if (_isSyncing) {
+      print("Sincronização já está em andamento. Abortando duplicada.");
+      return; 
     }
+    
+    _isSyncing = true; 
 
-    // 2. Obtém os registros pendentes no banco local
-    final pendentes = await _dbHelper.buscarPendentesSincronizacao();
-    if (pendentes.isEmpty) return;
-
-    // 3. Itera e envia cada registro pendente
-    for (var visitante in pendentes) {
-      try {
-        final response = await http.post(
-          Uri.parse(apiUrl),
-          headers: {'Content-Type': 'application/json'},
-          body: jsonEncode(visitante.toMap()),
-        );
-
-        // Se o servidor aceitou o registro (200 ou 201), marca como sincronizado localmente
-        if (response.statusCode == 200 || response.statusCode == 201) {
-          if (visitante.id != null) {
-            await _dbHelper.marcarComoSincronizado(visitante.id!);
-          }
-        }
-      } catch (e) {
-        break;
+    try {
+      final List<ConnectivityResult> connectivityResult = await (Connectivity().checkConnectivity());
+      if (connectivityResult.contains(ConnectivityResult.none)) {
+        print("Sincronização cancelada: Sem ligação à internet.");
+        return;
       }
+
+      print("URL da API carregada do .env: '$apiUrl'");
+      if (apiUrl.isEmpty) {
+        print("ERRO CRÍTICO: A URL da API está vazia! O ficheiro .env não foi lido corretamente.");
+        return;
+      }
+
+      final pendentes = await _dbHelper.buscarPendentesSincronizacao();
+      print("Encontrados ${pendentes.length} registos pendentes para enviar.");
+      
+      if (pendentes.isEmpty) return;
+
+      for (var visitante in pendentes) {
+        try {
+          print("A tentar enviar o visitante ID: ${visitante.id}...");
+          final response = await http.post(
+            Uri.parse(apiUrl),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(visitante.toMap()),
+          );
+
+          print("Resposta do Servidor -> Status: ${response.statusCode} | Body: ${response.body}");
+
+          if (response.statusCode == 200 || response.statusCode == 302) {
+            if (visitante.id != null) {
+              await _dbHelper.marcarComoSincronizado(visitante.id!);
+              print("Visitante ID: ${visitante.id} marcado como sincronizado com sucesso no SQLite!");
+            }
+          } else {
+             print("Falha ao enviar. O servidor rejeitou o envio.");
+          }
+        } catch (e) {
+          print("ERRO DE HTTP/REDE ao enviar visitante: $e");
+          break; 
+        }
+      }
+    } catch (e) {
+       print("ERRO GERAL no SQLite ou no processo de sincronização: $e");
+    } finally {
+      _isSyncing = false; 
     }
   }
 
-  // Monitora alterações na rede em tempo real
   void iniciarMonitoramento() {
     Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> results) {
       if (!results.contains(ConnectivityResult.none)) {
