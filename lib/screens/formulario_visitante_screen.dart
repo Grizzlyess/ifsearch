@@ -106,6 +106,8 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
           _comoConheceu.clear();
           _aspectosGostou.clear();
           _isOutroAspectoSelected = false;
+          _cidadeSelecionada = null;     
+          _cidadeController.clear();
         });
       }
     }
