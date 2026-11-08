@@ -153,6 +153,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             const Text('2. Com qual gênero você se identifica?', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
+              isExpanded: true,
               decoration: const InputDecoration(border: OutlineInputBorder()), // Padronizado sem labelText
               initialValue: _generoSelecionado,
               validator: (value) => value == null ? 'Campo obrigatório' : null,
@@ -175,6 +176,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             const Text('3. Estado Civil:', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
+              isExpanded: true,
               decoration: const InputDecoration(border: OutlineInputBorder()),
               initialValue: _estadoCivilSelecionado,
               validator: (value) => value == null ? 'Campo obrigatório' : null,
@@ -190,6 +192,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             const Text('4. Faixa Etária:', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
+              isExpanded: true,
               decoration: const InputDecoration(border: OutlineInputBorder()),
               initialValue: _faixaEtariaSelecionada,
               validator: (value) => value == null ? 'Campo obrigatório' : null,
@@ -213,6 +216,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             const Text('5. Escolaridade:', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
+              isExpanded: true,
               decoration: const InputDecoration(border: OutlineInputBorder()),
               initialValue: _escolaridadeSelecionada,
               validator: (value) => value == null ? 'Campo obrigatório' : null,
@@ -237,6 +241,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             const Text('6. Renda:', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
+              isExpanded: true,
               decoration: const InputDecoration(border: OutlineInputBorder()), 
               initialValue: _rendaSelecionada,
               validator: (value) => value == null ? 'Campo obrigatório' : null,
@@ -260,6 +265,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             const Text('7. Você é de qual cidade?', style: TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
+              isExpanded: true,
               decoration: const InputDecoration(border: OutlineInputBorder()), // Título removido daqui
               initialValue: _cidadeSelecionada,
               validator: (value) => value == null ? 'Campo obrigatório' : null,
@@ -285,6 +291,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
+              isExpanded: true,
               decoration: const InputDecoration(border: OutlineInputBorder()),
               initialValue: _hospedadoSelecionado,
               validator: (value) => value == null ? 'Campo obrigatório' : null,
@@ -419,6 +426,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
+              isExpanded: true,
               decoration: const InputDecoration(border: OutlineInputBorder()),
               initialValue: _diasVisitaSelecionado,
               validator: (value) => value == null ? 'Campo obrigatório' : null,
@@ -436,6 +444,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
+              isExpanded: true,
               decoration: const InputDecoration(border: OutlineInputBorder()),
               initialValue: _gastoPorDiaSelecionado,
               validator: (value) => value == null ? 'Campo obrigatório' : null,
@@ -577,6 +586,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
+              isExpanded: true,
               decoration: const InputDecoration(border: OutlineInputBorder()), 
               initialValue: _pretendeRetornarSelecionado,
               validator: (value) => value == null ? 'Campo obrigatório' : null,
@@ -595,6 +605,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
+              isExpanded: true,
               decoration: const InputDecoration(border: OutlineInputBorder()),
               initialValue: _recomendariaSelecionado,
               validator: (value) => value == null ? 'Campo obrigatório' : null,
@@ -613,6 +624,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
+              isExpanded: true,
               decoration: const InputDecoration(border: OutlineInputBorder()),
               initialValue: _iniciativaGarrafasSelecionada,
               validator: (value) => value == null ? 'Campo obrigatório' : null,
