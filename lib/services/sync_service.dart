@@ -75,4 +75,35 @@ class SyncService {
       }
     });
   }
+
+  Future<void> sincronizarEmpreendedores() async {
+    final dbHelper = DatabaseHelper();
+    final empreendedoresNaoSincronizados = await dbHelper.getEmpreendedoresNaoSincronizados();
+
+    if (empreendedoresNaoSincronizados.isEmpty) return;
+
+    final String apiUrl = dotenv.env['GOOGLE_SHEETS_API_EMPREENDEDORES'] ?? '';
+
+    if (apiUrl.isEmpty) {
+      print('ERRO: URL da API de Empreendedores não configurada no .env');
+      return;
+    }
+
+    for (var empreendedor in empreendedoresNaoSincronizados) {
+      try {
+        final response = await http.post(
+          Uri.parse(apiUrl),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(empreendedor.toMap()),
+        );
+
+        if (response.statusCode == 200 || response.statusCode == 302) {
+          await dbHelper.marcarEmpreendedorComoSincronizado(empreendedor.id!);
+          print('Empreendedor sincronizado com sucesso: ${empreendedor.nomeNegocio}');
+        }
+      } catch (e) {
+        print('Erro ao sincronizar empreendedor offline: $e');
+      }
+    }
+  }
 }

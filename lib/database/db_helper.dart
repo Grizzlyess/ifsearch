@@ -60,33 +60,36 @@ class DatabaseHelper {
     await db.execute('''
       CREATE TABLE empreendedores(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        dataHora TEXT,
+        email TEXT,
         nomeNegocio TEXT,
-        generoRepresentante TEXT,
-        ramo TEXT,
+        genero TEXT,
+        categoria TEXT,
         investimento TEXT,
         faturamento TEXT,
-        qtdEquipe INTEGER,
-        qtdMulheres INTEGER,
-        qtdHomens INTEGER,
+        equipeTotal TEXT,
+        equipeMulheres TEXT,
+        equipeHomens TEXT,
         gastosEquipe TEXT,
-        familiasBeneficiadas INTEGER,
+        familiasBeneficiadas TEXT,
         localInsumos TEXT,
-        unidAgua INTEGER,
-        unidRefrigerante INTEGER,
-        unidCerveja INTEGER,
-        unidSuco INTEGER,
-        unidEnergetico INTEGER,
-        unidDrinks INTEGER,
+        unidAgua TEXT,
+        unidRefrigerante TEXT,
+        unidCerveja TEXT,
+        unidSuco TEXT,
+        unidEnergetico TEXT,
+        unidDrinks TEXT,
         avaliacaoOrganizacao TEXT,
         apoioPrefeitura TEXT,
-        enfrentouDificuldade TEXT,
+        dificuldades TEXT,
         quaisDificuldades TEXT,
         divulgouNegocio TEXT,
         parcerias TEXT,
         salaEmpreendedor TEXT,
         proximasEdicoes TEXT,
         outrosEventos TEXT,
-        sugestoes TEXT
+        sugestoes TEXT,
+        sincronizado INTEGER DEFAULT 0
       )
     ''');
   }
@@ -94,11 +97,6 @@ class DatabaseHelper {
   Future<int> inserirVisitante(VisitanteModel visitante) async {
     Database db = await database;
     return await db.insert('visitantes', visitante.toMap());
-  }
-
-  Future<int> inserirEmpreendedor(EmpreendedorModel empreendedor) async {
-    Database db = await database;
-    return await db.insert('empreendedores', empreendedor.toMap());
   }
 
   Future<List<Map<String, dynamic>>> obterVisitantes() async {
@@ -125,6 +123,35 @@ class DatabaseHelper {
     final db = await database;
     await db.update(
       'visitantes',
+      {'sincronizado': 1},
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  // ==========================================
+  // FUNÇÕES DO EMPREENDEDOR
+  // ==========================================
+
+  Future<int> inserirEmpreendedor(EmpreendedorModel empreendedor) async {
+    Database db = await database;
+    return await db.insert('empreendedores', empreendedor.toMap());
+  }
+
+  Future<List<EmpreendedorModel>> getEmpreendedoresNaoSincronizados() async {
+    Database db = await database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'empreendedores',
+      where: 'sincronizado = ?',
+      whereArgs: [0],
+    );
+    return List.generate(maps.length, (i) => EmpreendedorModel.fromMap(maps[i]));
+  }
+
+  Future<void> marcarEmpreendedorComoSincronizado(int id) async {
+    Database db = await database;
+    await db.update(
+      'empreendedores',
       {'sincronizado': 1},
       where: 'id = ?',
       whereArgs: [id],

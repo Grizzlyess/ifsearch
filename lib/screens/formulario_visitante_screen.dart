@@ -110,9 +110,6 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
       return;
     }
 
-    // ==========================================
-    // SE CHEGOU AQUI, O FORMULÁRIO ESTÁ 100% PREENCHIDO
-    // ==========================================
 
     String cidadeFinal = _cidadeSelecionada == 'Outro' ? _cidadeController.text.trim() : (_cidadeSelecionada ?? '');
     String generoFinal = _generoSelecionado == 'Outro' ? _outroGeneroController.text.trim() : (_generoSelecionado ?? '');
@@ -151,7 +148,6 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
         const SnackBar(content: Text('Resposta salva offline com sucesso!'), backgroundColor: Colors.green),
       );
       
-      // Limpeza das variáveis de forma segura
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           _formKey.currentState!.reset();
@@ -190,7 +186,6 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
           child: Column( // <-- MUDANÇA AQUI
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // ... Mantenha todas as suas perguntas exatamente como estão ...
 
             // 1. EMAIL:
             TextFormField(
