@@ -129,9 +129,8 @@ class DatabaseHelper {
     );
   }
 
-  // ==========================================
   // FUNÇÕES DO EMPREENDEDOR
-  // ==========================================
+
 
   Future<int> inserirEmpreendedor(EmpreendedorModel empreendedor) async {
     Database db = await database;
@@ -156,6 +155,19 @@ class DatabaseHelper {
       where: 'id = ?',
       whereArgs: [id],
     );
+  }
+
+
+  Future<List<VisitanteModel>> buscarTodosVisitantes() async {
+    Database db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('visitantes');
+    return List.generate(maps.length, (i) => VisitanteModel.fromMap(maps[i]));
+  }
+
+  Future<List<EmpreendedorModel>> buscarTodosEmpreendedores() async {
+    Database db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('empreendedores');
+    return List.generate(maps.length, (i) => EmpreendedorModel.fromMap(maps[i]));
   }
  
 }

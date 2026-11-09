@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'formulario_visitante_screen.dart';
 import 'formulario_empreendedor_screen.dart';
+import '../services/export_service.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -74,6 +75,44 @@ class HomeScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)
               ),
             ),
+
+            const SizedBox(height: 40),
+            const Divider(),
+            const Text(
+              'Exportação Manual (Offline)', 
+              textAlign: TextAlign.center, 
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)
+            ),
+            const SizedBox(height: 10),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    await ExportService().exportarParaCSV(true); 
+                  },
+                  icon: const Icon(Icons.download, size: 18),
+                  label: const Text('CSV Visitantes'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey[200], 
+                    foregroundColor: Colors.black
+                  ),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    await ExportService().exportarParaCSV(false); 
+                  },
+                  icon: const Icon(Icons.download, size: 18),
+                  label: const Text('CSV Empreend.'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey[200], 
+                    foregroundColor: Colors.black
+                  ),
+                ),
+              ],
+            ),
+
           ],
         ),
       ),
