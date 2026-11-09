@@ -3,13 +3,18 @@ import 'package:http/http.dart' as http;
 import 'package:connectivity_plus/connectivity_plus.dart';
 import '../database/db_helper.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:supabase_flutter/supabase_flutter.dart'; 
 
 class SyncService {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   final String apiUrl = dotenv.env['GOOGLE_SHEETS_API_URL'] ?? '';
+  
 
-  // A NOSSA TRAVA DE SEGURANÇA
+  final supabase = Supabase.instance.client; 
+
   bool _isSyncing = false;
+
+  // VISITANTES
 
   Future<void> sincronizarDados() async {
     if (_isSyncing) {
@@ -26,83 +31,123 @@ class SyncService {
         return;
       }
 
-      print("URL da API carregada do .env: '$apiUrl'");
-      if (apiUrl.isEmpty) {
-        print("ERRO CRÍTICO: A URL da API está vazia! O ficheiro .env não foi lido corretamente.");
-        return;
-      }
-
       final pendentes = await _dbHelper.buscarPendentesSincronizacao();
-      print("Encontrados ${pendentes.length} registos pendentes para enviar.");
+      print("Encontrados ${pendentes.length} visitantes pendentes para enviar.");
       
       if (pendentes.isEmpty) return;
 
       for (var visitante in pendentes) {
+        bool sucessoPlanilha = false;
+        bool sucessoSupabase = false;
+
         try {
-          print("A tentar enviar o visitante ID: ${visitante.id}...");
-          final response = await http.post(
-            Uri.parse(apiUrl),
-            headers: {'Content-Type': 'application/json'},
-            body: jsonEncode(visitante.toMap()),
-          );
+          if (apiUrl.isNotEmpty) {
+            print("A tentar enviar o visitante ID: ${visitante.id} para o Sheets...");
+            final response = await http.post(
+              Uri.parse(apiUrl),
+              headers: {'Content-Type': 'application/json'},
+              body: jsonEncode(visitante.toMap()),
+            );
 
-          print("Resposta do Servidor -> Status: ${response.statusCode} | Body: ${response.body}");
-
-          if (response.statusCode == 200 || response.statusCode == 302) {
-            if (visitante.id != null) {
-              await _dbHelper.marcarComoSincronizado(visitante.id!);
-              print("Visitante ID: ${visitante.id} marcado como sincronizado com sucesso no SQLite!");
+            if (response.statusCode == 200 || response.statusCode == 302) {
+              sucessoPlanilha = true;
+              print("Sucesso no Google Sheets (Visitante)!");
             }
-          } else {
-             print("Falha ao enviar. O servidor rejeitou o envio.");
           }
         } catch (e) {
-          print("ERRO DE HTTP/REDE ao enviar visitante: $e");
-          break; 
+          print("ERRO DE HTTP/REDE ao enviar visitante para o Sheets: $e");
+        }
+
+
+        try {
+          final supabase = Supabase.instance.client;
+
+          final dadosSupabase = visitante.toMap(); 
+          dadosSupabase.remove('sincronizado');
+          dadosSupabase.remove('id'); 
+
+          await supabase.from('visitantes').insert(dadosSupabase);
+          sucessoSupabase = true;
+          print("Sucesso no Supabase!");
+        } catch (e) {
+          print("Erro ao enviar para o Supabase: $e");
+        }
+
+        if (sucessoPlanilha || sucessoSupabase) {
+          if (visitante.id != null) {
+            await _dbHelper.marcarComoSincronizado(visitante.id!);
+            print("Visitante ID: ${visitante.id} seguro na nuvem e baixado do SQLite!");
+          }
+        } else {
+          print("Falha total: Visitante ID ${visitante.id} não conseguiu chegar nem ao Sheets nem ao Supabase.");
         }
       }
     } catch (e) {
-       print("ERRO GERAL no SQLite ou no processo de sincronização: $e");
+       print("ERRO GERAL no SQLite ou no processo de sincronização de visitantes: $e");
     } finally {
       _isSyncing = false; 
     }
   }
 
+
   void iniciarMonitoramento() {
     Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> results) {
       if (!results.contains(ConnectivityResult.none)) {
         sincronizarDados();
+        sincronizarEmpreendedores(); 
       }
     });
   }
 
+  // EMPREENDEDORES
   Future<void> sincronizarEmpreendedores() async {
-    final dbHelper = DatabaseHelper();
-    final empreendedoresNaoSincronizados = await dbHelper.getEmpreendedoresNaoSincronizados();
+    final empreendedoresNaoSincronizados = await _dbHelper.getEmpreendedoresNaoSincronizados();
 
     if (empreendedoresNaoSincronizados.isEmpty) return;
 
-    final String apiUrl = dotenv.env['GOOGLE_SHEETS_API_EMPREENDEDORES'] ?? '';
-
-    if (apiUrl.isEmpty) {
-      print('ERRO: URL da API de Empreendedores não configurada no .env');
-      return;
-    }
+    final String apiUrlEmpreendedores = dotenv.env['GOOGLE_SHEETS_API_EMPREENDEDORES'] ?? '';
 
     for (var empreendedor in empreendedoresNaoSincronizados) {
-      try {
-        final response = await http.post(
-          Uri.parse(apiUrl),
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode(empreendedor.toMap()),
-        );
+      bool sucessoPlanilha = false;
+      bool sucessoSupabase = false;
 
-        if (response.statusCode == 200 || response.statusCode == 302) {
-          await dbHelper.marcarEmpreendedorComoSincronizado(empreendedor.id!);
-          print('Empreendedor sincronizado com sucesso: ${empreendedor.nomeNegocio}');
+      // Google Sheets
+
+      try {
+        if (apiUrlEmpreendedores.isNotEmpty) {
+          final response = await http.post(
+            Uri.parse(apiUrlEmpreendedores),
+            headers: {"Content-Type": "application/json"},
+            body: jsonEncode(empreendedor.toMap()),
+          );
+
+          if (response.statusCode == 200 || response.statusCode == 302) {
+            sucessoPlanilha = true;
+          }
         }
       } catch (e) {
-        print('Erro ao sincronizar empreendedor offline: $e');
+        print('Erro no Sheets (Empreendedor): $e');
+      }
+
+      //SUPABASE
+      try {
+        final supabase = Supabase.instance.client; 
+
+        final dadosSupabase = empreendedor.toMap(); 
+        dadosSupabase.remove('sincronizado');
+        dadosSupabase.remove('id'); 
+
+        await supabase.from('empreendedores').insert(dadosSupabase);
+        sucessoSupabase = true;
+        print("Sucesso no Supabase!");
+      } catch (e) {
+        print("Erro ao enviar para o Supabase: $e");
+      }
+
+
+      if (sucessoPlanilha || sucessoSupabase) {
+        await _dbHelper.marcarEmpreendedorComoSincronizado(empreendedor.id!);
+        print('Empreendedor seguro na nuvem: ${empreendedor.nomeNegocio}');
       }
     }
   }

@@ -51,7 +51,7 @@ class _FormularioEmpreendedorScreenState extends State<FormularioEmpreendedorScr
   Future<void> _salvarFormulario() async {
     FocusScope.of(context).unfocus();
 
-    // TRAVA 1: Identificação (1 a 6)
+    // Identificação (1 a 6)
     if (_emailController.text.trim().isEmpty || _nomeNegocioController.text.trim().isEmpty ||
         _generoSelecionado == null || (_generoSelecionado == 'Outro' && _outroGeneroController.text.trim().isEmpty) ||
         _categoriaSelecionada == null || (_categoriaSelecionada == 'Outro' && _outraCategoriaController.text.trim().isEmpty) ||
@@ -59,19 +59,19 @@ class _FormularioEmpreendedorScreenState extends State<FormularioEmpreendedorScr
       _mostrarErro('Preencha todas as perguntas de 1 a 6.'); return;
     }
 
-    // TRAVA 2: Equipe e Gastos (7 a 11)
+    // Equipe e Gastos (7 a 11)
     if (_equipeTotalController.text.trim().isEmpty || _equipeMulheresController.text.trim().isEmpty ||
         _equipeHomensController.text.trim().isEmpty || _gastosEquipeSelecionado == null ||
         _familiasController.text.trim().isEmpty) {
       _mostrarErro('Preencha as informações sobre a equipa (Perguntas 7 a 11).'); return;
     }
 
-    // TRAVA 3: Insumos (Apenas a 12 é obrigatória, 13 a 18 são opcionais)
+    //  Insumos (Apenas a 12 é obrigatória, 13 a 18 são opcionais)
     if (_localInsumosSelecionado == null || (_localInsumosSelecionado == 'Outro' && _outroLocalInsumosController.text.trim().isEmpty)) {
       _mostrarErro('Preencha a origem dos insumos (Pergunta 12).'); return;
     }
 
-    // TRAVA 4: Avaliação e Apoio (19 a 27)
+    // Avaliação e Apoio (19 a 27)
     if (_avaliacaoOrganizacaoSelecionada == null || _apoioPrefeituraSelecionado == null || _dificuldadesSelecionado == null ||
         (_dificuldadesSelecionado == 'Sim' && _quaisDificuldadesController.text.trim().isEmpty) ||
         _divulgouNegocioSelecionado == null || _parceriasSelecionadas == null || _salaEmpreendedorSelecionada == null ||
@@ -81,7 +81,7 @@ class _FormularioEmpreendedorScreenState extends State<FormularioEmpreendedorScr
 
     if (!_formKey.currentState!.validate()) return;
 
-    // MONTAGEM DO MODELO
+  
     String momentoDaColeta = DateTime.now().toString().split('.')[0];
     
     final empreendedor = EmpreendedorModel(
@@ -174,7 +174,7 @@ class _FormularioEmpreendedorScreenState extends State<FormularioEmpreendedorScr
 
               const Text('3. Gênero do representante *', style: TextStyle(fontWeight: FontWeight.bold)),
               DropdownButtonFormField<String>(
-                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), value: _generoSelecionado,
+                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), initialValue: _generoSelecionado,
                 items: ['Homem empreendedor', 'Mulher empreendedora', 'Outro'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
                 onChanged: (val) => setState(() => _generoSelecionado = val),
               ),
@@ -186,7 +186,7 @@ class _FormularioEmpreendedorScreenState extends State<FormularioEmpreendedorScr
 
               const Text('4. Ramo/categoria *', style: TextStyle(fontWeight: FontWeight.bold)),
               DropdownButtonFormField<String>(
-                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), value: _categoriaSelecionada,
+                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), initialValue: _categoriaSelecionada,
                 items: ['Alimentos/Bebidas', 'Vendas de Artesanato/Vestuário', 'Ambulante', 'Outro'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
                 onChanged: (val) => setState(() => _categoriaSelecionada = val),
               ),
@@ -198,7 +198,7 @@ class _FormularioEmpreendedorScreenState extends State<FormularioEmpreendedorScr
 
               const Text('5. Valor do investimento *', style: TextStyle(fontWeight: FontWeight.bold)),
               DropdownButtonFormField<String>(
-                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), value: _investimentoSelecionado,
+                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), initialValue: _investimentoSelecionado,
                 items: ['Até R\$ 500', 'De R\$ 501 a R\$ 1.500', 'De R\$ 1.501 a R\$ 3.000', 'De R\$ 3.001 a R\$ 5.000', 'De R\$ 5.001 a R\$ 10.000', 'Acima de R\$ 10.000'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
                 onChanged: (val) => setState(() => _investimentoSelecionado = val),
               ),
@@ -206,7 +206,7 @@ class _FormularioEmpreendedorScreenState extends State<FormularioEmpreendedorScr
 
               const Text('6. Faturamento médio estimado *', style: TextStyle(fontWeight: FontWeight.bold)),
               DropdownButtonFormField<String>(
-                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), value: _faturamentoSelecionado,
+                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), initialValue: _faturamentoSelecionado,
                 items: ['até R\$ 1.000', 'de R\$ 1.001 a R\$ 3.000', 'de R\$ 3.001 a R\$ 5.000', 'de R\$ 5.001 a R\$ 10.000', 'acima de R\$ 10.000'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
                 onChanged: (val) => setState(() => _faturamentoSelecionado = val),
               ),
@@ -221,7 +221,7 @@ class _FormularioEmpreendedorScreenState extends State<FormularioEmpreendedorScr
 
               const Text('10. Gastos com equipe *', style: TextStyle(fontWeight: FontWeight.bold)),
               DropdownButtonFormField<String>(
-                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), value: _gastosEquipeSelecionado,
+                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), initialValue: _gastosEquipeSelecionado,
                 items: ['Até R\$ 500', 'De R\$ 501 a R\$ 1.000', 'De R\$ 1.001 a R\$ 2.000', 'De R\$ 2.001 a R\$ 5.000', 'Acima de R\$ 5.000', 'Não se aplica'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
                 onChanged: (val) => setState(() => _gastosEquipeSelecionado = val),
               ),
@@ -232,7 +232,7 @@ class _FormularioEmpreendedorScreenState extends State<FormularioEmpreendedorScr
 
               const Text('12. Insumos adquiridos em *', style: TextStyle(fontWeight: FontWeight.bold)),
               DropdownButtonFormField<String>(
-                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), value: _localInsumosSelecionado,
+                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), initialValue: _localInsumosSelecionado,
                 items: ['Aracati', 'Outro'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
                 onChanged: (val) => setState(() => _localInsumosSelecionado = val),
               ),
@@ -259,7 +259,7 @@ class _FormularioEmpreendedorScreenState extends State<FormularioEmpreendedorScr
 
               const Text('19. Avaliação da organização *', style: TextStyle(fontWeight: FontWeight.bold)),
               DropdownButtonFormField<String>(
-                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), value: _avaliacaoOrganizacaoSelecionada,
+                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), initialValue: _avaliacaoOrganizacaoSelecionada,
                 items: ['Excelente', 'Boa', 'Regular', 'Ruim', 'Péssima'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
                 onChanged: (val) => setState(() => _avaliacaoOrganizacaoSelecionada = val),
               ),
@@ -267,7 +267,7 @@ class _FormularioEmpreendedorScreenState extends State<FormularioEmpreendedorScr
 
               const Text('20. Apoio da Prefeitura? *', style: TextStyle(fontWeight: FontWeight.bold)),
               DropdownButtonFormField<String>(
-                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), value: _apoioPrefeituraSelecionado,
+                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), initialValue: _apoioPrefeituraSelecionado,
                 items: ['Sim', 'Não'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
                 onChanged: (val) => setState(() => _apoioPrefeituraSelecionado = val),
               ),
@@ -275,12 +275,11 @@ class _FormularioEmpreendedorScreenState extends State<FormularioEmpreendedorScr
 
               const Text('21. Enfrentou dificuldade? *', style: TextStyle(fontWeight: FontWeight.bold)),
               DropdownButtonFormField<String>(
-                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), value: _dificuldadesSelecionado,
+                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), initialValue: _dificuldadesSelecionado,
                 items: ['Sim', 'Não'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
                 onChanged: (val) {
                   setState(() {
                     _dificuldadesSelecionado = val;
-                    // Limpa o campo de texto caso mude para "Não"
                     if (val == 'Não') _quaisDificuldadesController.clear();
                   });
                 },
@@ -294,7 +293,7 @@ class _FormularioEmpreendedorScreenState extends State<FormularioEmpreendedorScr
 
               const Text('23. Contribuiu para divulgar? *', style: TextStyle(fontWeight: FontWeight.bold)),
               DropdownButtonFormField<String>(
-                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), value: _divulgouNegocioSelecionado,
+                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), initialValue: _divulgouNegocioSelecionado,
                 items: ['Sim', 'Não'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
                 onChanged: (val) => setState(() => _divulgouNegocioSelecionado = val),
               ),
@@ -302,7 +301,7 @@ class _FormularioEmpreendedorScreenState extends State<FormularioEmpreendedorScr
 
               const Text('24. Estabeleceu parcerias? *', style: TextStyle(fontWeight: FontWeight.bold)),
               DropdownButtonFormField<String>(
-                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), value: _parceriasSelecionadas,
+                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), initialValue: _parceriasSelecionadas,
                 items: ['Sim', 'Não'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
                 onChanged: (val) => setState(() => _parceriasSelecionadas = val),
               ),
@@ -310,7 +309,7 @@ class _FormularioEmpreendedorScreenState extends State<FormularioEmpreendedorScr
 
               const Text('25. Utiliza Sala do Empreendedor? *', style: TextStyle(fontWeight: FontWeight.bold)),
               DropdownButtonFormField<String>(
-                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), value: _salaEmpreendedorSelecionada,
+                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), initialValue: _salaEmpreendedorSelecionada,
                 items: ['Sim', 'Não'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
                 onChanged: (val) => setState(() => _salaEmpreendedorSelecionada = val),
               ),
@@ -318,7 +317,7 @@ class _FormularioEmpreendedorScreenState extends State<FormularioEmpreendedorScr
 
               const Text('26. Próximas edições? *', style: TextStyle(fontWeight: FontWeight.bold)),
               DropdownButtonFormField<String>(
-                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), value: _proximasEdicoesSelecionada,
+                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), initialValue: _proximasEdicoesSelecionada,
                 items: ['Sim, com certeza.', 'Talvez, dependendo das condições.', 'Não, não tenho interesse.', 'Ainda estou indeciso(a), preciso avaliar.'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
                 onChanged: (val) => setState(() => _proximasEdicoesSelecionada = val),
               ),
@@ -326,7 +325,7 @@ class _FormularioEmpreendedorScreenState extends State<FormularioEmpreendedorScr
 
               const Text('27. Outros eventos da Prefeitura? *', style: TextStyle(fontWeight: FontWeight.bold)),
               DropdownButtonFormField<String>(
-                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), value: _outrosEventosSelecionados,
+                isExpanded: true, decoration: const InputDecoration(border: OutlineInputBorder()), initialValue: _outrosEventosSelecionados,
                 items: ['Sim', 'Talvez', 'Não'].map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
                 onChanged: (val) => setState(() => _outrosEventosSelecionados = val),
               ),

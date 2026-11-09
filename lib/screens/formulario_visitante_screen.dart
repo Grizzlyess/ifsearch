@@ -72,7 +72,7 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
       return; 
     }
 
-    // 3. TRAVA DE FERRO: Hospedagem
+    // 3. Hospedagem
     if (_hospedadoSelecionado == 'Sim') {
       if (_tipoHospedagemSelecionado == null || _localHospedagemSelecionado == null || _qtdPessoasHospedadas == null) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('ERRO: Preencha os dados da hospedagem.'), backgroundColor: Colors.red));
@@ -80,13 +80,13 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
       }
     }
 
-    // 4. TRAVA DE FERRO: Perguntas 13 e 14
+    // 4. Perguntas 13 e 14
     if (_diasVisitaSelecionado == null || _gastoPorDiaSelecionado == null) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('ERRO: Responda às perguntas 13 e 14.'), backgroundColor: Colors.red));
       return;
     }
 
-    // 5. TRAVA DE FERRO: Perguntas 15 e 16
+    // 5.  Perguntas 15 e 16
     bool p15Respondida = _comoConheceu.isNotEmpty || (_isOutroComoConheceuSelected && _outroComoConheceuController.text.trim().isNotEmpty);
     bool p16Respondida = _aspectosGostou.isNotEmpty || (_isOutroAspectoSelected && _outroAspectoController.text.trim().isNotEmpty);
 
@@ -99,13 +99,13 @@ class _FormularioVisitanteScreenState extends State<FormularioVisitanteScreen> {
       return; 
     }
 
-    // 6. TRAVA DE FERRO: Perguntas 17 a 19
+    // 6.  Perguntas 17 a 19
     if (_pretendeRetornarSelecionado == null || _recomendariaSelecionado == null || _iniciativaGarrafasSelecionada == null) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('ERRO: Responda às perguntas 17 a 19.'), backgroundColor: Colors.red));
       return;
     }
 
-    // 7. Validação visual final (Textos curtos, e-mails inválidos, etc.)
+    // 7. Validação  final 
     if (!_formKey.currentState!.validate()) {
       return;
     }
