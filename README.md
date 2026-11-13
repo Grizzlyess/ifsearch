@@ -44,7 +44,6 @@ O projeto utiliza o pacote `flutter_dotenv` para proteger chaves de API e isolar
 SUPABASE_URL=sua_url_aqui
 SUPABASE_ANON_KEY=sua_chave_aqui
 GOOGLE_SHEETS_CREDENTIALS=suas_credenciais_json_aqui
-EMAILS_PESQUISADORES=pesquisador1@aluno.ifce.edu.br,pesquisador2@aluno.ifce.edu.br
 ```
 
 ---
